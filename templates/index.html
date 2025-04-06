@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-3">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Welcome, {{ session.username }}!</h5>
+                <p class="card-text">You're now on the home feed.</p>
+                <a href="{{ url_for('create_post') }}" class="btn btn-primary">Create New Post</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-9">
+        <h2>Recent Posts</h2>
+        {% if posts %}
+            {% for post in posts %}
+                {% set user = post.author %}
+                <div class="card post-card">
+                    <div class="card-body">
+                        <div class="post-header">
+                            <span class="post-user">{{ user.username }}</span>
+                            <span class="post-time">{{ post.created_at.strftime('%B %d, %Y at %H:%M') }}</span>
+                        </div>
+                        
+                        {% if post.content %}
+                            <p>{{ post.content }}</p>
+                        {% endif %}
+                        
+                        {% if post.media_path %}
+                            <div class="media-content">
+                                {% if post.post_type == 'photo' %}
+                                    <img src="{{ url_for('static', filename=post.media_path) }}" class="img-fluid" alt="Photo">
+                                {% elif post.post_type == 'video' %}
+                                    <video controls>
+                                        <source src="{{ url_for('static', filename=post.media_path) }}" type="video/mp4">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                {% elif post.post_type == 'audio' %}
+                                    <audio controls>
+                                        <source src="{{ url_for('static', filename=post.media_path) }}" type="audio/mpeg">
+                                        Your browser does not support the audio tag.
+                                    </audio>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No posts yet. Be the first to post something!</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
